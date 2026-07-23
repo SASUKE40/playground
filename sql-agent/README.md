@@ -12,7 +12,8 @@ It never runs the generated query — it only reads the schema (via
 ```bash
 cd sql-agent
 npm install
-export OPENROUTER_API_KEY=sk-or-v1-...
+cp .env.example .env
+# Add your OPENROUTER_API_KEY to .env
 npm run seed   # creates example.sqlite with a tiny customers/products/orders schema
 ```
 

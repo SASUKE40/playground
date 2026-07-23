@@ -10,13 +10,16 @@ This is a playground repo. It currently contains one project, `sql-agent/`, a cu
 
 ```bash
 npm install                              # install dependencies
+cp .env.example .env                     # add OPENROUTER_API_KEY to this ignored file
 npm run seed                             # (re)generate example.sqlite (customers/products/orders demo data)
-ANTHROPIC_API_KEY=sk-ant-... node sql-agent.ts <path-to-sqlite-file> "<question>"
+npm start -- <path-to-sqlite-file> "<question>"
 ```
 
 There is no build step: files are plain `.ts` and run directly via `node` — Node 24's native TypeScript type-stripping handles them, so don't add a bundler/tsconfig/ts-node here without reason. There is no lint or test suite configured in this project yet.
 
-Requires `ANTHROPIC_API_KEY` in the environment (uses `pi-ai`'s `anthropicProvider`, model `claude-sonnet-5`).
+Requires `OPENROUTER_API_KEY` in `.env` or the environment. The CLI uses
+`pi-ai`'s `openrouterProvider` with the zero-cost `openrouter/free` router for
+testing.
 
 ## Architecture
 
@@ -33,4 +36,4 @@ Requires `ANTHROPIC_API_KEY` in the environment (uses `pi-ai`'s `anthropicProvid
 
 - Tools are defined as `AgentTool` objects with a `typebox`-based `parameters` schema and an `execute(toolCallId, args, signal, onUpdate)` function. Throw an `Error` inside `execute` for failure cases — don't return error text as content.
 - `new Agent({ initialState: { systemPrompt, model, tools }, streamFn })` then `await agent.prompt(question)` is the whole integration surface; no manual event-loop handling is needed unless streaming UI output is required (see `agent.subscribe(...)` in the `pi` repo's own README if that's ever needed here).
-- Model selection: `createModels()` → `models.setProvider(anthropicProvider())` → `models.getModel("anthropic", "<model-id>")`. Swapping providers means importing a different provider from `@earendil-works/pi-ai/providers/*` and changing the id passed to `getModel`.
+- Model selection: `createModels()` → `models.setProvider(openrouterProvider())` → `models.getModel("openrouter", "openrouter/free")`. Swapping providers means importing a different provider from `@earendil-works/pi-ai/providers/*` and changing the id passed to `getModel`.
