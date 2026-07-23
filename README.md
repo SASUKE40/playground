@@ -14,6 +14,47 @@ OpenRouter to inspect a SQLite schema and generate a matching SQL statement.
 It does **not** execute generated SQL. The database is opened read-only, and
 the agent can only read schema definitions and submit its final query.
 
+## Architecture
+
+```mermaid
+flowchart TD
+    User([User])
+
+    User -->|Interactive questions| TUI["tui.ts<br/>Interactive terminal UI"]
+    User -->|One-shot question| CLI["sql-agent.ts<br/>Command-line interface"]
+
+    TUI --> DB
+    CLI --> DB
+    TUI --> Runner
+    CLI --> Runner
+
+    DB[("SQLite database<br/>opened read-only")]
+
+    Runner["generate-sql.ts<br/>Shared agent runner"]
+    Runner --> Models["pi-ai model registry"]
+    Models --> OpenRouter["OpenRouter<br/>openrouter/free"]
+    Runner --> Agent["pi-agent-core Agent"]
+
+    Prompt["SYSTEM_PROMPT<br/>Schema first · Never guess"]
+    Prompt --> Agent
+
+    Agent -->|1. Call get_schema| SchemaTool["get_schema tool"]
+    SchemaTool --> ReadSchema["readSchema()"]
+    ReadSchema -->|Read sqlite_master| DB
+    DB -->|CREATE TABLE / INDEX statements| ReadSchema
+    ReadSchema -->|Schema context| Agent
+
+    Agent -->|2. Generate SQL| SubmitTool["submit_sql tool"]
+    SubmitTool -->|SQL + optional explanation| Formatter["formatResult()"]
+
+    Formatter --> TUI
+    Formatter --> CLI
+    TUI -->|Display result| User
+    CLI -->|Print result| User
+
+    Agent -. "Generated SQL is never executed" .-> Safety["Read-only safety boundary"]
+```
+
 ## Requirements
 
 - Node.js 24 or newer
