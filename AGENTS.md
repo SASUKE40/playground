@@ -4,12 +4,14 @@
 
 All application code lives in `sql-agent/`:
 
-- `sql-agent.ts` is the CLI entry point. It opens a SQLite database read-only, exposes schema and submission tools to the agent, and prints generated SQL.
+- `sql-agent.ts` is the CLI entry point: thin wiring only (argv parsing, opening the real SQLite DB, constructing the model/agent, printing the result).
+- `lib.ts` holds the testable core: `readSchema`, `createGetSchemaTool`, `createSubmitSqlTool`, `formatResult`, `SYSTEM_PROMPT`. Anything that doesn't need a live model or `process.exit` belongs here, not in `sql-agent.ts`.
+- `test/lib.test.ts` covers `lib.ts` using `node:test` + `node:assert/strict` and in-memory (`:memory:`) SQLite databases — no network calls, no API key needed.
 - `seed-example-db.ts` recreates the sample `example.sqlite` database.
 - `example.sqlite` is the small development fixture described in `README.md`.
 - `package.json` and `package-lock.json` define the Node.js dependencies and runnable scripts.
 
-Keep new runtime modules beside the entry point until the codebase warrants a `src/` directory. If tests are added, place them in `sql-agent/test/` or next to their subject as `*.test.ts`.
+Keep new runtime modules beside the entry point until the codebase warrants a `src/` directory. Place new tests in `sql-agent/test/` as `*.test.ts`, and prefer adding testable logic to `lib.ts` over `sql-agent.ts` so it stays coverable without live API calls.
 
 ## Build, Test, and Development Commands
 
@@ -20,9 +22,11 @@ npm install
 cp .env.example .env
 npm run seed
 npm start -- example.sqlite "List orders by customer"
+npm test              # run the unit test suite (node:test)
+npm run test:coverage # same, with a coverage report
 ```
 
-`npm install` restores the locked dependencies. `npm run seed` deletes and rebuilds the example database. `npm start -- ...` runs the CLI and passes the database path and question as arguments. There is no compilation step or automated test command currently; Node executes the TypeScript files directly.
+`npm install` restores the locked dependencies. `npm run seed` deletes and rebuilds the example database. `npm start -- ...` runs the CLI and passes the database path and question as arguments. There is no compilation step; Node executes the TypeScript files directly.
 
 ## Coding Style & Naming Conventions
 
@@ -32,7 +36,7 @@ No formatter or linter is configured. Match surrounding code and keep functions 
 
 ## Testing Guidelines
 
-Before submitting changes, reseed the fixture and exercise both success and failure paths manually. Confirm a valid prompt returns SQL, a missing argument prints usage, and an empty or invalid database fails clearly. Never let tests execute model-generated SQL against user data. When adding automated tests, avoid live API calls and use temporary SQLite fixtures.
+Run `npm test` (or `npm run test:coverage`) before submitting changes to `lib.ts`. Automated tests must avoid live API calls and use in-memory or temporary SQLite fixtures — the model/agent wiring in `sql-agent.ts` is intentionally left uncovered by automated tests for this reason. For changes that touch `sql-agent.ts` itself, also reseed the fixture and exercise both success and failure paths manually: confirm a valid prompt returns SQL, a missing argument prints usage, and an empty or invalid database fails clearly. Never let tests execute model-generated SQL against user data.
 
 ## Commit & Pull Request Guidelines
 

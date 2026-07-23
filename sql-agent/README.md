@@ -35,7 +35,7 @@ node sql-agent.ts example.sqlite "How many orders did each customer place?"
 
 ## How it works
 
-The agent has two tools:
+The agent has two tools, defined in `lib.ts`:
 
 - `get_schema` — reads every `CREATE TABLE`/`CREATE INDEX` statement from the
   target database and returns it as context. The system prompt requires the
@@ -44,3 +44,15 @@ The agent has two tools:
 - `submit_sql` — the model calls this exactly once with the final query (and
   an optional explanation). Calling it ends the agent run; the CLI prints
   whatever was submitted.
+
+## Testing
+
+```bash
+npm test              # run the unit test suite (node:test, no API key needed)
+npm run test:coverage # same, with a coverage report
+```
+
+Tests cover `lib.ts` (schema reading, the two tools, and result formatting)
+against in-memory SQLite databases. The CLI wiring in `sql-agent.ts` itself
+isn't unit-tested since it requires a live model call — exercise that path
+manually with `npm start`.
