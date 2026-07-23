@@ -23,6 +23,20 @@ fixed model for production workloads.
 
 ## Usage
 
+Start the local web interface:
+
+```bash
+npm run web
+```
+
+Open `http://127.0.0.1:3000`. The server uses `example.sqlite` by default and
+keeps the API key out of the browser. Select another database or port with
+environment variables:
+
+```bash
+SQL_AGENT_DB_PATH=/path/to/database.sqlite PORT=8080 npm run web
+```
+
 Start the interactive terminal interface:
 
 ```bash
@@ -62,9 +76,10 @@ The agent has two tools, defined in `lib.ts`:
   an optional explanation). Calling it ends the agent run; the CLI prints
   whatever was submitted.
 
-`generate-sql.ts` contains the shared live-agent runner used by both
-`sql-agent.ts` and `tui.ts`, so both interfaces follow the same schema-first
-generation flow.
+`generate-sql.ts` contains the shared live-agent runner used by the CLI, TUI,
+and local web server, so every interface follows the same schema-first
+generation flow. `web-server.ts` serves the browser assets and exposes schema
+and generation JSON endpoints; it binds to `127.0.0.1` by default.
 
 ## Testing
 
@@ -73,7 +88,7 @@ npm test              # run the unit test suite (node:test, no API key needed)
 npm run test:coverage # same, with a coverage report
 ```
 
-Tests cover `lib.ts` (schema reading, the two tools, and result formatting)
-against in-memory SQLite databases. The CLI wiring in `sql-agent.ts` itself
-isn't unit-tested since it requires a live model call — exercise that path
-manually with `npm start`.
+Tests cover `lib.ts` against in-memory SQLite databases and exercise the web
+server with an injected agent runner. Live model calls are not part of the
+automated suite; exercise those paths manually with `npm start`, `npm run tui`,
+or `npm run web`.

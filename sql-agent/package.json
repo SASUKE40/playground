@@ -8,6 +8,7 @@
     "seed": "node seed-example-db.ts",
     "start": "node --env-file-if-exists=.env sql-agent.ts",
     "tui": "node --env-file-if-exists=.env tui.ts",
+    "web": "node --env-file-if-exists=.env web-server.ts",
     "test": "node --test",
     "test:coverage": "node --test --experimental-test-coverage"
   },

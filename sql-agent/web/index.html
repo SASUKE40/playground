@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Generate SQLite queries from natural-language questions without executing them."
+    />
+    <title>SQL Agent</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <script src="/app.js" defer></script>
+  </head>
+  <body>
+    <main class="shell">
+      <header class="hero">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true">〉_</span>
+          <span>SQL Agent</span>
+        </div>
+        <div class="safety"><span aria-hidden="true"></span> Read-only schema access</div>
+        <h1>Ask your database.<br /><em>Get the query.</em></h1>
+        <p>
+          Describe the data you need in plain language. The agent inspects the
+          connected SQLite schema and returns SQL without running it.
+        </p>
+      </header>
+
+      <section class="workspace" aria-label="SQL generator">
+        <form id="question-form" class="composer">
+          <label for="question">What would you like to know?</label>
+          <textarea
+            id="question"
+            name="question"
+            rows="4"
+            maxlength="4000"
+            placeholder="How many orders did each customer place?"
+            required
+          ></textarea>
+          <div class="composer-footer">
+            <div class="examples" aria-label="Example questions">
+              <button type="button" data-question="Show total order quantity by customer">
+                Quantity by customer
+              </button>
+              <button type="button" data-question="List the top products by revenue">
+                Top products
+              </button>
+            </div>
+            <button id="generate" class="primary" type="submit">
+              <span>Generate SQL</span>
+              <span aria-hidden="true">→</span>
+            </button>
+          </div>
+        </form>
+
+        <section id="result-panel" class="result-panel" aria-live="polite">
+          <div class="result-heading">
+            <div>
+              <span class="eyebrow">Generated query</span>
+              <h2 id="result-title">Ready when you are</h2>
+            </div>
+            <button id="copy" class="copy" type="button" hidden>Copy SQL</button>
+          </div>
+          <pre><code id="sql-output">Your SQL will appear here.</code></pre>
+          <p id="explanation" class="explanation"></p>
+        </section>
+      </section>
+
+      <aside class="schema-panel">
+        <div class="schema-heading">
+          <div>
+            <span class="eyebrow">Connected database</span>
+            <h2>Schema</h2>
+          </div>
+          <button id="schema-toggle" type="button" aria-expanded="false" aria-controls="schema">
+            View schema
+          </button>
+        </div>
+        <pre id="schema" hidden>Loading schema…</pre>
+      </aside>
+
+      <footer>
+        <span>OpenRouter · openrouter/free</span>
+        <span>Generated SQL is never executed</span>
+      </footer>
+    </main>
+  </body>
+</html>

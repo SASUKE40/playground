@@ -1,8 +1,8 @@
 # Playground
 
 A collection of small experiments with AI agents and developer tooling. The
-repository currently contains `sql-agent`, a command-line tool that turns
-natural-language questions into SQLite queries.
+repository currently contains `sql-agent`, a tool that turns natural-language
+questions into SQLite queries through web, terminal, and one-shot interfaces.
 
 ## Projects
 
@@ -22,11 +22,15 @@ flowchart TD
 
     User -->|Interactive questions| TUI["tui.ts<br/>Interactive terminal UI"]
     User -->|One-shot question| CLI["sql-agent.ts<br/>Command-line interface"]
+    User -->|Browser question| Web["web/<br/>Browser interface"]
 
     TUI --> DB
     CLI --> DB
     TUI --> Runner
     CLI --> Runner
+    Web --> Server["web-server.ts<br/>Local HTTP API"]
+    Server --> DB
+    Server --> Runner
 
     DB[("SQLite database<br/>opened read-only")]
 
@@ -49,8 +53,11 @@ flowchart TD
 
     Formatter --> TUI
     Formatter --> CLI
+    Formatter --> Server
     TUI -->|Display result| User
     CLI -->|Print result| User
+    Server --> Web
+    Web -->|Display result| User
 
     Agent -. "Generated SQL is never executed" .-> Safety["Read-only safety boundary"]
 ```
@@ -68,15 +75,22 @@ npm install
 cp .env.example .env
 # Add your OPENROUTER_API_KEY to .env
 npm run seed
-npm run tui
+npm run web
 ```
 
 The default `openrouter/free` model router is suitable for development and
 low-volume testing. Free-model availability and rate limits can vary.
 
-The terminal interface supports repeated questions and includes `:schema`,
-`:clear`, `:help`, and `:quit` commands. For a single non-interactive request,
-run:
+Open `http://127.0.0.1:3000` to use the browser interface. The OpenRouter key
+and database remain on the local server. To use another SQLite file:
+
+```bash
+SQL_AGENT_DB_PATH=/path/to/database.sqlite npm run web
+```
+
+The terminal interface remains available with `npm run tui`; it supports
+repeated questions and includes `:schema`, `:clear`, `:help`, and `:quit`
+commands. For a single non-interactive request, run:
 
 ```bash
 npm start -- example.sqlite "How many orders did each customer place?"
@@ -103,6 +117,8 @@ directly.
 ├── sql-agent/
 │   ├── sql-agent.ts       # CLI and live model wiring
 │   ├── tui.ts             # Interactive terminal interface
+│   ├── web-server.ts      # Local HTTP server and JSON API
+│   ├── web/               # Browser interface assets
 │   ├── generate-sql.ts    # Shared live-agent runner
 │   ├── lib.ts             # Testable schema and tool logic
 │   ├── test/              # Unit tests

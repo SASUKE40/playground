@@ -12,6 +12,7 @@ This is a playground repo. It currently contains one project, `sql-agent/`, a cu
 npm install                              # install dependencies
 cp .env.example .env                     # add OPENROUTER_API_KEY to this ignored file
 npm run seed                             # (re)generate example.sqlite (customers/products/orders demo data)
+npm run web                              # serve the browser UI at 127.0.0.1:3000
 npm run tui                              # launch the interactive terminal interface
 npm start -- <path-to-sqlite-file> "<question>"
 npm test                                  # run unit tests (node:test, no network/API key needed)
@@ -27,12 +28,14 @@ testing.
 ## Architecture
 
 The application separates testable core logic, live agent construction, and
-the two user interfaces:
+the user interfaces:
 
 - `sql-agent/lib.ts` — the testable core: `readSchema`, `createGetSchemaTool`, `createSubmitSqlTool`, `formatResult`, `SYSTEM_PROMPT`. Pure functions / factories with no network or process-lifecycle side effects.
-- `sql-agent/generate-sql.ts` — constructs the OpenRouter model and agent, then returns a formatted result. Both interfaces use this runner.
+- `sql-agent/generate-sql.ts` — constructs the OpenRouter model and agent, then returns a formatted result. Every interface uses this runner.
 - `sql-agent/sql-agent.ts` — thin one-shot CLI wiring: argv parsing, database lifecycle, and output.
 - `sql-agent/tui.ts` — interactive terminal loop with repeated questions and local commands.
+- `sql-agent/web-server.ts` — local HTTP server, schema/generation JSON routes, and lifecycle for the read-only database.
+- `sql-agent/web/` — dependency-free browser client. The OpenRouter key never leaves the server.
 
 The core design: give the LLM exactly two tools and drive the whole interaction through them rather than parsing free-form text output.
 
