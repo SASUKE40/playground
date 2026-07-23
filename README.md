@@ -27,11 +27,19 @@ npm install
 cp .env.example .env
 # Add your OPENROUTER_API_KEY to .env
 npm run seed
-npm start -- example.sqlite "How many orders did each customer place?"
+npm run tui
 ```
 
 The default `openrouter/free` model router is suitable for development and
 low-volume testing. Free-model availability and rate limits can vary.
+
+The terminal interface supports repeated questions and includes `:schema`,
+`:clear`, `:help`, and `:quit` commands. For a single non-interactive request,
+run:
+
+```bash
+npm start -- example.sqlite "How many orders did each customer place?"
+```
 
 ## Development
 
@@ -53,6 +61,8 @@ directly.
 .
 ├── sql-agent/
 │   ├── sql-agent.ts       # CLI and live model wiring
+│   ├── tui.ts             # Interactive terminal interface
+│   ├── generate-sql.ts    # Shared live-agent runner
 │   ├── lib.ts             # Testable schema and tool logic
 │   ├── test/              # Unit tests
 │   └── example.sqlite     # Seeded demonstration database

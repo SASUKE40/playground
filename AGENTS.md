@@ -5,6 +5,8 @@
 All application code lives in `sql-agent/`:
 
 - `sql-agent.ts` is the CLI entry point: thin wiring only (argv parsing, opening the real SQLite DB, constructing the model/agent, printing the result).
+- `tui.ts` provides the interactive terminal interface and command loop.
+- `generate-sql.ts` owns the live OpenRouter agent construction shared by both entry points.
 - `lib.ts` holds the testable core: `readSchema`, `createGetSchemaTool`, `createSubmitSqlTool`, `formatResult`, `SYSTEM_PROMPT`. Anything that doesn't need a live model or `process.exit` belongs here, not in `sql-agent.ts`.
 - `test/lib.test.ts` covers `lib.ts` using `node:test` + `node:assert/strict` and in-memory (`:memory:`) SQLite databases — no network calls, no API key needed.
 - `seed-example-db.ts` recreates the sample `example.sqlite` database.
@@ -21,6 +23,7 @@ Run commands from `sql-agent/`:
 npm install
 cp .env.example .env
 npm run seed
+npm run tui           # launch the interactive terminal interface
 npm start -- example.sqlite "List orders by customer"
 npm test              # run the unit test suite (node:test)
 npm run test:coverage # same, with a coverage report
