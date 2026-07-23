@@ -6,7 +6,7 @@
   "description": "Custom agent that generates SQL for a SQLite database, built on the pi agent harness",
   "scripts": {
     "seed": "node seed-example-db.ts",
-    "start": "node sql-agent.ts"
+    "start": "node --env-file-if-exists=.env sql-agent.ts"
   },
   "dependencies": {
     "@earendil-works/pi-agent-core": "^0.81.1",

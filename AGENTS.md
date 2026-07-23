@@ -17,8 +17,9 @@ Run commands from `sql-agent/`:
 
 ```bash
 npm install
+cp .env.example .env
 npm run seed
-OPENROUTER_API_KEY=... npm start -- example.sqlite "List orders by customer"
+npm start -- example.sqlite "List orders by customer"
 ```
 
 `npm install` restores the locked dependencies. `npm run seed` deletes and rebuilds the example database. `npm start -- ...` runs the CLI and passes the database path and question as arguments. There is no compilation step or automated test command currently; Node executes the TypeScript files directly.
