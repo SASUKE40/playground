@@ -1,0 +1,16 @@
+{
+  "name": "sql-agent",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Custom agent that generates SQL for a SQLite database, built on the pi agent harness",
+  "scripts": {
+    "seed": "node seed-example-db.ts",
+    "start": "node sql-agent.ts"
+  },
+  "dependencies": {
+    "@earendil-works/pi-agent-core": "^0.81.1",
+    "@earendil-works/pi-ai": "^0.81.1",
+    "typebox": "1.1.38"
+  }
+}

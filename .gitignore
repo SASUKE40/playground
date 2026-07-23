@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+
+# Environment files and secrets
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+
+# Build and test output
+dist/
+build/
+coverage/
+
+# SQLite runtime files (keep example.sqlite available as a fixture)
+*.sqlite-shm
+*.sqlite-wal
+*.sqlite-journal
+
+# Editor and operating-system files
+.DS_Store
+.idea/
+.vscode/
+*.swp
